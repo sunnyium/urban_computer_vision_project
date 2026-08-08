@@ -1,0 +1,31 @@
+# dataset — never commit. BDD100K is ~5GB and redistribution is not ours to do.
+data/raw/
+data/processed/
+data/splits/
+data/synthetic/
+
+# experiment output
+mlruns/
+mlartifacts/
+checkpoints/
+*.pth
+
+# keep the figures — the README and notebooks reference them, and they need to
+# render on GitHub without anyone rebuilding the project first
+!data/results/
+!data/results/*.png
+!data/results/.gitkeep
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
