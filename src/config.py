@@ -24,8 +24,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-# Environment switch so every module and subprocess agrees. One fast epoch on a
-# few hundred images, to catch wiring errors.
+# One fast epoch on a few hundred images, to catch wiring errors.
 SMOKE = os.environ.get("SMOKE", "0") == "1"
 
 
@@ -55,8 +54,13 @@ VAL_FRAC = 0.15
 # Cap per condition to prevent small vs. large test set comparisons
 TEST_CAP = 50 if SMOKE else 500
 
-# Only 5 real foggy daytime images in val, too few for a retention ratio, so fog
-# is scored on corrupted clear-test images only and the real count is a footnote
+# Faster R-CNN shrinks a 720-pixel frame to MIN_SIZE, so a 4-pixel box reaches
+# the backbone barely over three and cannot be learned from. The same test
+# removes any degenerate box, where x2 has landed at or below x1
+MIN_BOX_SIZE = 4.0
+
+# Only 5 real foggy daytime images in val, too few for a retention ratio
+# Fog is scored on corrupted clear images only 
 REAL_CONDITIONS = ("rain", "snow", "night")
 SYNTHETIC_CONDITIONS = ("rain", "snow", "fog", "night")
 
@@ -86,15 +90,13 @@ SYNTHETIC = DATA / "synthetic"
 CHECKPOINTS = ROOT / "checkpoints"
 MLRUNS = ROOT / "mlruns"
 
-# Both archives unpack to a nested bdd100k/ level, so neither root is where the
-# download page implies
+# Both archives unpack to a nested bdd100k/ level
 BDD_IMAGES = RAW / "bdd100k" / "bdd100k" / "images" / "100k"
 BDD_LABELS = RAW / "bdd100k_labels_release" / "bdd100k" / "labels"
 
 IMAGE_ROOT = SYNTHETIC / "images" if SMOKE else BDD_IMAGES
 LABEL_ROOT = SYNTHETIC / "labels" if SMOKE else BDD_LABELS
 
-# val only: its 10,000 images arrived complete, 100k/train is short of 70,000
 SOURCE_SPLITS = ("val",)
 
 # Smoke artifacts have a unique name
@@ -149,6 +151,7 @@ if __name__ == "__main__":
     print(f"{'batch size':<14}{BATCH_SIZE}")
     print(f"{'image size':<14}{MIN_SIZE}-{MAX_SIZE}")
     print(f"{'test cap':<14}{TEST_CAP} per condition")
+    print(f"{'min box':<14}{MIN_BOX_SIZE:g} px")
 
     print("\npaths")
     for name, p in (("images", IMAGE_ROOT), ("labels", LABEL_ROOT),
