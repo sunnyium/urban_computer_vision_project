@@ -116,8 +116,7 @@ def build() -> tuple[dict, list[dict]]:
     good splits file in place rather than a half-valid one."""
     if not cfg.INDEX_PATH.exists():
         raise FileNotFoundError(
-            f"{cfg.INDEX_PATH.relative_to(cfg.ROOT)} not found, "
-            "run prepare_data.py first")
+            f"{cfg.INDEX_PATH} not found, run prepare_data.py first")
 
     recs = json.loads(cfg.INDEX_PATH.read_text(encoding="utf-8"))
     cond = {r["name"]: r["condition"] for r in recs}
