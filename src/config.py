@@ -135,6 +135,9 @@ ARMS = {
 
 HFLIP_P = 0.5
 
+# How often each colour op fires, for the arms that switch photometric on
+AUG_PHOTOMETRIC_P = 0.5
+
 # How often a training image gets non-clear weather
 AUG_WEATHER_P = 0.5
 
