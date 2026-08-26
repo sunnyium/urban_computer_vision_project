@@ -23,9 +23,8 @@ Writing:
     test_nothing_is_written_when_a_check_fails | the old file survives
     test_a_missing_index_names_the_fix | the error says what to run
 
-The leakage tests are the point. Both guards cover a failure that is silent by
-construction: a leaked train image makes every score rise and nothing error, so
-a guard that quietly stopped firing would look exactly like a good run.
+A leaked train image makes every score rise without raising an error.
+A guard that stopped firing would appears like a good run.
 """
 
 from __future__ import annotations

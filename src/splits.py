@@ -12,16 +12,14 @@ Checking:
 Writing:
     build() | read the index, split, check both properties, write SPLITS_PATH
 
-Training on clear weather alone is what makes this a measurement of distribution
-shift rather than of memorisation. If adverse images reached train, a good rain
-score would only show the model had seen rain before.
+Training on clear weather alone makes this a measurement of distribution shift 
+instead of memorisation. If adverse images reached train, a good rain score 
+would only show the model had seen rain before.
 
-Both properties raise AssertionError rather than using a bare assert, because
-python -O strips the latter, and these are the two failures that would
-invalidate every number the project reports while nothing errored.
+Both properties raise AssertionError rather than using a bare assert, which
+would invalidate every number the project reports.
 
-Names are stored, not records. The index stays the one description of what an
-image is, so the two files cannot drift into disagreeing.
+Names are stored instead of records to keep the index consistent.
 """
 
 from __future__ import annotations
@@ -99,7 +97,7 @@ def assert_disjoint(splits: dict) -> None:
 def assert_clear_only(splits: dict, cond: dict) -> None:
     """Train, val and the clear test bucket hold clear-weather images only.
     `cond` is name -> condition from the index, read back rather than carried
-    through the split, so a bug in build_splits cannot also supply its alibi."""
+    through the split."""
     b = buckets(splits)
     for label in ("train", "val", "test/clear"):
         bad = [n for n in b[label] if cond[n] != "clear"]
@@ -113,7 +111,7 @@ def assert_clear_only(splits: dict, cond: dict) -> None:
 def build() -> tuple[dict, list[dict]]:
     """Split the index, check both properties, then write SPLITS_PATH.
     Nothing is written until the checks pass, so a failed run leaves the last
-    good splits file in place rather than a half-valid one."""
+    good splits file in place."""
     if not cfg.INDEX_PATH.exists():
         raise FileNotFoundError(
             f"{cfg.INDEX_PATH} not found, run prepare_data.py first")

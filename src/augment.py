@@ -8,24 +8,21 @@ Pipeline:
 Building:
     build_augmenter() | arm name -> the callable dataset.py applies per image
 
-Arms differ only in which halves run. config.ARMS holds the two switches and
-nothing else in the pipeline branches on the arm, so the four runs are one
-controlled experiment rather than four unrelated training jobs.
+config.ARMS holds the two switches deciding which half runs and nothing
+else in the pipeline branches on the arm. The four runs are controlled.
 
 Only hflip moves a box, so it goes through albumentations, which transforms the
-boxes with the image. The weather half moves no pixel to a new coordinate and
-stays outside that machinery, where there is no bbox bookkeeping to get wrong.
+boxes with the image. The weather half moves no pixel to a new coordinate.
 
-Colour jitter runs first, so the corruption is the last thing to touch the
-pixels, as it is when the corrupted test sets are built.
+Colour jitter runs first, so the corruption is the last thing to reach the
+pixels.
 """
 
 from __future__ import annotations
 
 import os
 
-# albumentations pings PyPI for a version check at import, which stalls an
-# offline or containerised run and tells a training job nothing it can act on
+# albumentations pings PyPI for a version check at import
 os.environ.setdefault("NO_ALBUMENTATIONS_UPDATE", "1")
 
 import albumentations as A
@@ -34,15 +31,14 @@ import numpy as np
 import config as cfg
 import weather as wx
 
-# All six, not the four scored. motion_blur and noise have no BDD100K attribute
-# to build a real test column from, so they are trained against and never scored
+# motion_blur and noise have no BDD100K attribute to build a real test column from
 TRAIN_CORRUPTIONS = tuple(wx.CORRUPTIONS)
 
-# pascal_voc is xyxy in absolute pixels, which is what the index already holds.
+# pascal_voc is xyxy in absolute pixels
 # hflip is the only op that moves a box and it moves none out of frame, so there
-# is nothing for min_area or min_visibility to catch. Boxes must already lie
-# inside the frame: albumentations raises on one that does not, and clipping is
-# left off so an upstream bug surfaces here rather than being quietly absorbed
+# is nothing for min_area or min_visibility to catch. 
+# Boxes must already lie inside the frame: clipping is
+# left off so an upstream bug surfaces
 BBOX_PARAMS = A.BboxParams(format="pascal_voc", label_fields=["labels"])
 
 
