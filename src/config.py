@@ -34,6 +34,13 @@ SEED = 42
 EPOCHS = 1 if SMOKE else 10
 BATCH_SIZE = 2 if SMOKE else 4
 
+ARCHITECTURE = "fasterrcnn_resnet50_fpn_v2"
+
+# 3 rather than 5. The earliest ResNet layers hold generic edge and texture
+# filters, and fine-tuning those on a clear-only training set is a way to lose
+# the very robustness this study is trying to measure
+TRAINABLE_BACKBONE_LAYERS = 3
+
 # Faster R-CNN rescales internally, so these bound the shorter and longer edge
 MIN_SIZE = 256 if SMOKE else 600
 MAX_SIZE = 448 if SMOKE else 1000
@@ -67,6 +74,12 @@ SYNTHETIC_CONDITIONS = ("rain", "snow", "fog", "night")
 # Medium severity to separate the arms but not have every arm score ~0
 EVAL_SEVERITY = 3
 
+# Two thresholds, because scoring and showing want opposite things. mAP
+# integrates precision across the whole recall curve, so dropping the
+# low-confidence tail truncates the curve and costs AP the model really earned
+EVAL_SCORE_THRESH = 0.05
+
+# What a person should be shown. Only api.py and the figures read this
 SCORE_THRESH = 0.5
 
 
