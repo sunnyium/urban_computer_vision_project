@@ -51,6 +51,14 @@ WEIGHT_DECAY = 0.0005
 LR_STEP = 3
 LR_GAMMA = 0.1
 
+# Full LR on a freshly initialised box predictor can diverge in the first few
+# steps, and the losses do not come back. Linear warmup over epoch 0 only
+WARMUP_ITERS = 5 if SMOKE else 300
+
+# Detection losses spike when a predicted box degenerates. Clipping keeps one
+# bad batch from taking the run with it
+GRAD_CLIP = 10.0
+
 # Windows does not fork worker processes; it spawns them
 NUM_WORKERS = 0
 
@@ -60,6 +68,11 @@ VAL_FRAC = 0.15
 
 # Cap per condition to prevent small vs. large test set comparisons
 TEST_CAP = 50 if SMOKE else 500
+
+# Cap on training images, None for the whole clear pool. This is the lever for a
+# reduced run: there is no GPU on this machine, so a full four-arm sweep is
+# measured in days
+TRAIN_SUBSET = 8 if SMOKE else None
 
 # Faster R-CNN shrinks a 720-pixel frame to MIN_SIZE, so a 4-pixel box reaches
 # the backbone barely over three and cannot be learned from. The same test
